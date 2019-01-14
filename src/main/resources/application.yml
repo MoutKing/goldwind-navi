@@ -1,0 +1,96 @@
+server:
+  port: 8083
+  servlet:
+    session:
+      timeout: 3600
+      cookie:
+        path: /
+#        domain: baidu.com
+        http-only: true
+        name: SESSION
+        max-age: 4600 # 暂无作用，过期时间使用 session.timeout
+
+
+
+spring:
+  application:
+    name: gold navi
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/gold_navi?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true
+#    username: root
+#    password: 1qaz2wsX@
+    url: jdbc:mysql://test-highway.cwgmvljzgyqf.rds.cn-north-1.amazonaws.com.cn:3306/highway?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true
+    username: highwaymaster
+    password: Initial-0
+    ###################以下为druid增加的配置###########################
+    druid:
+      # 配置初始化大小，最小，最大
+      initial-size: 2
+      min-idle: 2
+      max-active: 5
+      #获取链接等待超时时间
+      max-wait: 30000
+      #一个连接在池中最小生存的时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      # 间隔多久才进行一次检测,单位是毫秒
+      time-between-eviction-runs-millis: 18800
+#  datasource:
+#    type: ${jdbc.xaDataSourceClassName}
+##    driver-class-name: ${jdbc.driverClassName}
+#    druid:
+#      url:   ${jdbc.url}
+#      username: ${jdbc.username}
+#      password: ${jdbc.password}
+#      pool-prepared-statements: ${jdbc.poolPreparedStatements}
+#      max-pool-prepared-statement-per-connection-size: ${jdbc.maxPoolPreparedStatementPerConnectionSize}
+#      # 配置初始化大小，最小，最大
+#      initial-size: ${jdbc.initialSize}
+#      min-idle: ${jdbc.minIdle}
+#      max-active: ${jdbc.maxActive}
+#      #获取链接等待超时时间
+#      max-wait: 3000
+#      #一个连接在池中最小生存的时间
+#      min-evictable-idle-time-millis: 300000
+#      validation-query: SELECT 1
+#      # 心跳检测,间隔多久才进行一次检测,单位是毫秒
+#      time-between-eviction-runs-millis: 5000
+#      #检测池里连接的可用性 消耗性能 默认为false
+#      test-on-borrow: false
+#      test-on-return: false
+#      test-while-idle: true
+#      validation-query-timeout: 10000
+#      filters: wall
+
+  session:
+    store-type: redis
+#    redis:
+#      flush-mode: immediate
+  redis:
+    host: test-highway.l095bp.ng.0001.cnn1.cache.amazonaws.com.cn
+  #      host: dev-zuul.hqaqa2.ng.0001.cnn1.cache.amazonaws.com.cn
+    port: 6379
+    database: 2
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 30
+        max-idle: 8
+        min-idle: 0
+      timeout: 60000
+
+        
+mybatis:
+#  config-location: classpath:mybatis-config.xml
+#  type-aliases-package: com.gw.sc.common.model
+  mapper-locations: classpath:sqlmap/*.xml
+
+#redis:
+#  host: ${redis.host}
+#  port: ${redis.port}
+#  password: ${redis.password}
+#  maxIdle: ${redis.maxIdle}
+#  maxTotal: ${redis.maxTotal}
+#  maxWaitMillis: ${redis.maxWaitMillis}

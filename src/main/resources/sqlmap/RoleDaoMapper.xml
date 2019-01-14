@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gw.web.userCenter.dao.RoleDao">
+
+    <resultMap id="roleMap" type="com.gw.web.userCenter.model.Role">
+        <id property="id" column="id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleDescription" column="role_description" />
+    </resultMap>
+
+    <sql id="queryCondition">
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="roleName != null and roleName != ''">
+                and role_name = #{roleName}
+            </if>
+            <if test="roleDescription != null and roleDescription != ''">
+                and role_description = #{roleDescription}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getByMap" parameterType="map" resultMap="roleMap" >
+        SELECT r.* FROM t_role r
+        <include refid="queryCondition" />
+    </select>
+
+    <select id="getById" parameterType="int" resultMap="roleMap">
+        SELECT * FROM t_role WHERE id =#{id}
+    </select>
+
+    <select id="getByRoleName" parameterType="String" resultMap="roleMap">
+        select r.* from t_role r
+        where name= #{name}
+    </select>
+
+    <select id="getByUserId" parameterType="Integer" resultMap="roleMap">
+        SELECT r.*
+          FROM t_user_role ur
+          LEFT JOIN t_role r ON ur.role_id = r.id
+        WHERE ur.user_id= #{userId}
+    </select>
+    <select id="getRelationCountOfUserRole" parameterType="Integer" resultType="int">
+        SELECT COUNT(1)
+        FROM t_user_role ur
+        WHERE ur.role_id= #{roleId}
+    </select>
+
+    <insert id="create" parameterType="com.gw.web.userCenter.model.Role">
+        <selectKey resultType="int"  order="AFTER" keyProperty="id" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_role(
+            id,
+            role_name,
+            role_description
+        )VALUES(
+            #{id},
+            #{roleName},
+            #{roleDescription}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gw.web.userCenter.model.Role">
+        UPDATE t_role
+        <set>
+            <if test = "name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM t_role WHERE id = #{id}
+    </delete>
+
+</mapper>

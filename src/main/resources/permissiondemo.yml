@@ -1,0 +1,62 @@
+#permission
+-
+  - id: 12
+    permissionName: 首页
+    permissionCode: 
+    permissionLevel: '1'
+    parentId: '0'
+    apiUrl: 
+    apiScope: 
+    restType: 
+    remark: 
+    createDate: 
+    modifiedDate: 
+    creator: 
+    modifier: 
+    menu: '1'        
+
+  - id: 22
+    permissionName: 项目
+    permissionCode: 
+    permissionLevel: '1'
+    parentId: '0'
+    apiUrl: 
+    apiScope: 
+    restType: 
+    remark: 
+    createDate: 
+    modifiedDate: 
+    creator: 
+    modifier: 
+    menu: '1'
+    childrens:
+      - id: 42
+        permissionName: 项目列表 
+        permissionCode: 
+        permissionLevel: '2' 
+        parentId: '2'
+        apiUrl: /project/list
+        apiScope: 
+        restType: post
+        remark: 
+        createDate: 
+        modifiedDate: 
+        creator: 
+        modifier: 
+        menu: '0'
+        childrens:
+          - id: 52
+            permissionName: 项目详情
+            permissionCode: 
+            permissionLevel: '3'
+            parentId: '4'
+            apiUrl: /project/list/detail
+            apiScope: 
+            restType: post
+            remark: 
+            createDate: 
+            modifiedDate: 
+            creator: 
+            modifier: 
+            menu: '0'   
+        

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gw.web.userCenter.dao.PermissionDao">
+    <resultMap id="permissionMap" type="com.gw.web.userCenter.model.Permission">
+        <id property="id" column="id"/>
+        <result property="permissionName" column="permission_name"/>
+        <result property="permissionCode" column="permission_code"/>
+        <result property="permissionLevel" column="permission_level"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="apiScope" column="api_scope"/>
+        <result property="restType" column="rest_type"/>
+        <result property="remark" column="remark"/>
+        <result property="createDate" column="create_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <result property="creator" column="creator"/>
+        <result property="modifier" column="modifier"/>
+        <result property="menu" column="menu"/>
+    </resultMap>
+
+    <resultMap id="rolePermissionMap" type="com.gw.web.userCenter.model.RolePermission">
+        <id property="id" column="id"/>
+        <result property="permissionId" column="permission_id"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+	<sql id="t_permission">
+		p.id,
+		p.permission_name,
+		p.permission_code,
+		p.permission_level,
+		p.parent_id,
+		p.api_url,
+		p.api_scope,
+		p.rest_type,
+		p.creator,
+		p.menu
+	</sql>
+    <!-- <sql id="queryCondition">
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="permissionUrl != null and permissionUrl != ''">
+                and permission_url = #{permissionUrl}
+            </if>
+            <if test="method != null and method != ''">
+                and method = #{method}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+
+        </where>
+    </sql> -->
+
+    <select id="getByUserId" parameterType="int" resultMap="permissionMap">
+        select p.*
+        from t_user u
+        LEFT JOIN t_user_role ur on u.id= ur.User_id
+        LEFT JOIN t_role r on ur.role_id=r.id
+        LEFT JOIN t_role_permission rp on rp.role_id=r.id
+        LEFT JOIN t_permission p on p.id =rp.permission_id
+        where u.id=#{userId}
+    </select>
+
+    <select id="getByRoleId" parameterType="integer" resultMap="permissionMap">
+        SELECT p.*
+            FROM t_role_permission rp
+        LEFT JOIN t_permission p ON rp.permission_id = p.id
+        WHERE rp.role_id = #{roleId}
+    </select>
+
+    <select id="getRelationOfRolePermission" resultMap="rolePermissionMap">
+        select rp.*
+            from t_role_permission rp
+        where rp.role_id = #{roleId} and rp.permission_id = #{permissionId}
+    </select>
+
+	<select id="getPermissionTree" parameterType="integer" resultMap="permissionMap">
+		select
+			<include refid="t_permission"/>
+		from
+			t_permission p
+        ORDER BY
+			p.permission_level asc
+	</select>
+
+    <insert id="addRelationOfRolePermission" >
+        <selectKey resultType="int"  order="AFTER" keyProperty="id" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_role_permission(
+            id,
+            permission_id,
+            role_id
+        )VALUES(
+            #{id},
+            #{permissionId},
+            #{roleId}
+        )
+    </insert>
+
+    <insert id="addPermission" parameterType="com.gw.web.userCenter.model.Permission">
+        <selectKey resultType="int"  order="AFTER" keyProperty="id" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_permission(
+            id,
+            permission_name,
+            permission_code,
+            permission_level,
+            parent_id,
+            api_url,
+            api_scope,
+            rest_type,
+            remark,
+            create_date,
+            modified_date,
+            creator,
+            modifier,
+            menu
+        )VALUES(
+            #{id},
+            #{permissionName},
+            #{permissionCode},
+            #{permissionLevel},
+            #{parentId},
+            #{apiUrl},
+            #{apiScope},
+            #{restType},
+            #{remark},
+            #{createDate},
+            #{modifiedDate},
+            #{creator},
+            #{modifier},
+            #{menu}
+        )
+    </insert>
+
+    <delete id="deleteRelationOfRolePermission" >
+        DELETE FROM t_role_permission
+        WHERE permission_id = #{permissionId} AND role_id = #{roleId}
+    </delete>
+
+</mapper>

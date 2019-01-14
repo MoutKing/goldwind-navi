@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gw.web.userCenter.dao.UserDao">
+    <resultMap id="userMap" type="com.gw.web.userCenter.model.User">
+        <id property="id" column="id"/>
+        <result property="account" column="account"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="enable" column="enable"/>
+        <result property="isLocked" column="is_locked"/>
+        <result property="unlockTime" column="unlock_time"/>
+		<result property="account" column="account"/>
+		<result property="accountType" column="account_type"/>
+        <result property="position" column="position"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="company" column="company" />
+        <result property="email" column="email"/>
+        <result property="telephone" column="telephone"/>
+        <result property="mobilePhone" column="mobilephone"/>
+    </resultMap>
+
+    <!-- <sql id="queryCondition">
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="cnname != null and cnname != ''">
+                and cnname = #{cnname}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="telephone != null and telephone != ''">
+                and telephone = #{telephone}
+            </if>
+            <if test="mobilePhone != null and mobilePhone != ''">
+                and mobile_phone = #{mobilePhone}
+            </if>
+        </where>
+    </sql> -->
+	<sql id="t_user">
+		u.id,
+		u.username,
+		u.password,
+		u.enable,
+		u.is_locked,
+		u.unlock_time,
+		u.user_id,
+		u.position,
+		u.department,
+		u.telephone,
+		u.email,
+		u.mobilephone
+	</sql>
+	<select id="getUserListByRole" parameterType="Integer" resultMap="userMap">
+		SELECT
+			<include refid="t_user"/>
+		FROM
+			t_user AS u,
+			t_role AS r,
+			t_user_role AS ur
+		WHERE
+			u.id=ur.user_id and r.id=ur.role_id and r.id=#{roleId}
+	</select>
+	<select id="getUserByCondition" resultMap="userMap">
+		SELECT
+			<include refid="t_user"/>
+		FROM
+			t_user AS u,
+			t_role AS r,
+			t_user_role AS ur
+		WHERE
+			<!-- 0 is roleId,1 is condition -->
+			u.id=ur.user_id and r.id=ur.role_id and r.id=#{roleId} and (u.user_id LIKE #{condition}"%" or u.username LIKE #{condition}"%")
+	</select>
+	<select id="getCurrentCarrierMainAccountExist" parameterType="String" resultType="Integer">
+		SELECT 
+			count(1) 
+		FROM 
+			t_user u,t_user_role ur, t_role r, t_carrier c 
+		WHERE 
+			u.department_id=#{departmentId} AND
+			u.id=ur.user_id AND 
+			ur.role_id=r.id AND
+			c.id=u.department_id
+	</select>
+	
+	<select id="getByUserName" parameterType="String" resultType="com.gw.web.userCenter.model.User">
+		SELECT u.* FROM t_user u WHERE u.username = #{username}
+	</select>
+	
+	<select id="getUserListByGW" resultMap="userMap">
+		SELECT u.user_id FROM t_user u where u.user_id LIKE 'gw'"%"
+	</select>
+	
+	<insert id="addUser" parameterType="com.gw.web.userCenter.model.User">
+		<selectKey resultType="int" order="AFTER" keyProperty="id" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_user(
+        account,
+        username,
+        password,
+        enable,
+        is_locked,
+        unlock_time,
+        user_id,
+        position,
+        department_id,
+        telephone,
+        email,
+        mobilephone
+        )VALUES(
+        #{account},
+        #{username},
+        #{password},
+        #{enable},
+        #{isLocked},
+        #{unlockTime},
+        #{userId},
+        #{position},
+        #{departmentId},
+        #{email},
+        #{telephone},
+        #{mobilephone}
+            username,
+            password,
+            enable,
+            is_locked,
+            unlock_time,
+            user_id,
+            position,
+            department_id,
+            telephone,
+            email,
+            mobilephone
+        )VALUES(
+            #{username},
+            #{password},
+            #{enable},
+            #{isLocked},
+            #{unlockTime},
+            #{userId},
+            #{position},
+            #{departmentId},
+            #{email},
+            #{telephone},
+            #{mobilephone}
+        )
+	</insert>
+	
+	<insert id="assignRoleForUser" parameterType="Integer">
+		insert into t_user_role(user_id,role_id) values(#{userId},#{roleId})
+	</insert>
+	
+	<delete id="deleteUser" parameterType="int">
+        DELETE FROM t_user WHERE user_id = #{userId}
+    </delete>
+    <!-- <select id="getByMap" parameterType="map" resultMap="userMap">
+        SELECT u.* FROM user u
+        <include refid="queryCondition" />
+        ORDER  by id DESC
+    </select>
+=======
+
+>>>>>>> d8faf770786eb2f46e35304729c4b120a0509dc2
+    <select id="getById" parameterType="int" resultMap="userMap">
+        SELECT * FROM t_user WHERE id =#{id}
+    </select>-->
+
+</mapper>
